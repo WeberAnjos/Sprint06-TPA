@@ -30,5 +30,7 @@ Route::delete('/perguntas/{pergunta}', [PerguntaController::class, 'destroy'])
     ->name('perguntas.destroy')
     ->middleware('auth');
 
-
-
+Route::post('/perguntas/{pergunta}/votar', [PerguntaController::class, 'votar'])
+    ->name('perguntas.votar')
+    ->middleware('auth');
+    

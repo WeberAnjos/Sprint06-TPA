@@ -53,7 +53,36 @@
                         <span>• Por: {{ $pergunta->user->name ?? 'Anônimo' }}</span>
                     </div>
 
-                    <div class="flex items-center space-x-4">
+                    {{-- Ticket #012: UI de Votos e Ranking no Telão --}}
+                    <div class="flex items-center space-x-3">
+                        <!-- Contador de Votos Virtual -->
+                        <span class="px-2 py-1 text-xs font-bold rounded bg-gray-800 text-blue-400 border border-gray-700">
+                            ▲ {{ $pergunta->votos_count ?? 0 }} {{ Str::plural('voto', $pergunta->votos_count ?? 0) }}
+                        </span>
+
+                        <!-- Formulário do Botão de Upvote Interativo -->
+                        <form action="{{ route('perguntas.votar', $pergunta->id) }}" method="POST" class="inline">
+                            @csrf
+                            @auth
+                                @if($pergunta->votos->contains(auth()->id()))
+                                    {{-- Botão destacado indicando que o usuário já votou (removerá o voto no clique) --}}
+                                    <button type="submit" class="bg-blue-600 text-white font-semibold py-1 px-2 text-xs rounded hover:bg-blue-700 transition duration-200" title="Clique para remover seu voto">
+                                        Votado
+                                    </button>
+                                @else
+                                    {{-- Botão padrão de Upvote não clicado --}}
+                                    <button type="submit" class="bg-transparent border border-blue-500 text-blue-500 font-semibold py-1 px-2 text-xs rounded hover:bg-blue-500 hover:text-white transition duration-200">
+                                        Votar
+                                    </button>
+                                @endif
+                            @else
+                                {{-- Link para quem não está logado --}}
+                                <a href="{{ route('login') }}" class="bg-transparent border border-gray-700 text-gray-500 font-semibold py-1 px-2 text-xs rounded hover:border-gray-500 hover:text-gray-400 transition duration-200">
+                                    Votar
+                                </a>
+                            @endauth
+                        </form>
+
                         <span>{{ $pergunta->created_at->format('d/m/Y H:i') }}</span>
                         
                         {{-- Botão de Exclusão direto em HTML para evitar quebras por falta de pastas --}}
@@ -75,12 +104,11 @@
 
         <!-- Links de Paginação do Laravel -->
         @if(method_exists($perguntas, 'links'))
-            <div class="flex justify-center mt-6">
-                {{ $perguntas->links() }}
-            </div>
-        @endif
-    </div>
+        <div class="flex justify-center mt-6">
+            {{ $perguntas->links() }}
+        </div>
+    @endif
 </div>
-
-
+</div>
 @endsection
+

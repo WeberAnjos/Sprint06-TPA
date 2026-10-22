@@ -19,11 +19,13 @@ class EventoController extends Controller
     // Garanta que o parâmetro do método é (Evento $evento) com o tipo correto
     public function show(Evento $evento)
     {
-        // Ticket #006: Filtra as perguntas públicas e mantém paginação + eager loading
         $perguntas = $evento->perguntas()
-            ->where('is_public', true)
-            ->with('user')
-            ->paginate(10);
+            ->withCount('votos')
+            ->with('votos')
+            ->orderByDesc('votos_count')
+            ->paginate(10); // O ponto e vírgula deve ficar aqui, sem texto extra
+
+
 
         // Passa o objeto $evento populado e a paginação de $perguntas para a view
         return view('eventos.show', compact('evento', 'perguntas'));
